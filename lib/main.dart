@@ -6,8 +6,8 @@ import 'package:intern_app/screen/welcom.dart';
 
 void main() async{
   await Hive.initFlutter();
-  await Hive.openBox('strbox');
-  await Hive.openBox('intbox');
+  await Hive.openBox('incomebox');
+  await Hive.openBox('expensebox');
   runApp(Main());
 }
 
