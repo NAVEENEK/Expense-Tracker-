@@ -9,8 +9,13 @@ class Welcom extends StatefulWidget {
 }
 
 class _WelcomState extends State<Welcom> {
-  List<String> note = [];
-  List<int> amount = [];
+  List<String> innote = [];
+  List<int> inamount = [];
+  List<String>exnote=[];
+  List<int>examount=[];
+  int total_income=0;
+  int total_expense=0;
+  
 
   // function to add income and expense
   void Adding(BuildContext context, bool gettiltle) {
@@ -40,11 +45,19 @@ class _WelcomState extends State<Welcom> {
                     border: OutlineInputBorder(),
                   ),
                   onSubmitted: (value) {
-                    note.add(textcontroller.text.trim());
-                    Hive.box('strbox').put('notelist', note);
-                    print(textcontroller.text);
+                    if(gettiltle){
+                    innote.add(textcontroller.text.trim());
+                    Hive.box('incomebox').put('innotelist', innote);
                     print(textcontroller.text);
                     textcontroller.clear();
+                    }
+                    else{
+                      exnote.add(textcontroller.text.trim());
+                      Hive.box('expensebox').put('exnotelist',exnote);
+                      print(textcontroller.text);
+                      textcontroller.clear();
+                    }
+
                   },
                 ),
                 TextField(
@@ -55,18 +68,21 @@ class _WelcomState extends State<Welcom> {
                     border: OutlineInputBorder(),
                   ),
                   onSubmitted: (value) {
-                    int temp =
-                        int.tryParse(intcontroller.text) ??
-                        0; // convert string to int(because texteditingcontroller always store data as string). store the converted value in temp variable
-                    amount.add(
-                      temp,
-                    ); // the value stored in temp is transfered to amount list
-                    Hive.box('intbox').put(
-                      'amountlist',
-                      amount,
-                    ); //store the value in amount list to hive box
-                    print(temp);
-                    intcontroller.clear();
+                    int temp =int.tryParse(intcontroller.text) ?? 0; // convert string to int(because texteditingcontroller always store data as string). store the converted value in temp variable
+                    if(gettiltle){
+                    inamount.add(temp,); // the value stored in temp is transfered to amount list
+                    Hive.box('incomebox').put('inamountlist',inamount); //store the value in amount list to hive box
+                    total_income+=temp;
+                    Hive.box('incomebox').put('totalincome',total_income);
+                    }
+                    else{
+                      examount.add(temp);
+                      Hive.box('expensebox').put('examountlist',examount);
+                       total_expense+=temp;
+                    Hive.box('expensebox').put('totalexpense',total_expense);
+                    }
+                    temp=0;
+                     intcontroller.clear();
                   },
                 ),
               ],
@@ -92,6 +108,7 @@ class _WelcomState extends State<Welcom> {
       },
     );
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -115,20 +132,29 @@ class _WelcomState extends State<Welcom> {
                       padding: const EdgeInsets.all(10),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: const Color.fromARGB(255, 7, 241, 147),
                           boxShadow: [BoxShadow(color: Colors.black)],
                           borderRadius: BorderRadius.circular(10),
                         ),
 
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [Text('Expence')],
+                          children: [
+                            Text('Income'),
+                            ValueListenableBuilder(
+                              valueListenable:Hive.box('incomebox').listenable() ,
+                              builder:(context,box,_){
+                                int value=Hive.box('incomebox').get('totalincome',defaultValue: 0);
+                                return Text('$value');
+                              }
+                              )
+                            ],
                         ),
+
                       ),
                     ),
                     FloatingActionButton(
                       onPressed: () => Adding(context, true),
-                      backgroundColor: const Color.fromARGB(255, 251, 253, 254),
                       tooltip: 'add income',
                       shape: CircleBorder(),
                       child: Icon(Icons.add),
@@ -142,20 +168,28 @@ class _WelcomState extends State<Welcom> {
                       padding: const EdgeInsets.all(10),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.greenAccent,
+                          color: const Color.fromARGB(255, 255, 0, 0),
                           boxShadow: [BoxShadow(color: Colors.black)],
                           borderRadius: BorderRadius.circular(10),
                         ),
 
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [Text('Income')],
+                          children: [
+                            Text('Expense'),
+                            ValueListenableBuilder(
+                              valueListenable: Hive.box('expensebox').listenable(),
+                             builder: (context,box,_){
+                              int value=Hive.box('expensebox').get('totalexpense',defaultValue:0);
+                              return Text('$value');
+                             }
+                             )
+                            ],
                         ),
                       ),
                     ),
                     FloatingActionButton(
                       onPressed: () => Adding(context, false),
-                      backgroundColor: const Color.fromARGB(255, 244, 243, 242),
                       tooltip: 'add expense',
                       shape: CircleBorder(),
                       child: Icon(Icons.remove),
