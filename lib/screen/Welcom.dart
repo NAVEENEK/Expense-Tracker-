@@ -13,8 +13,7 @@ class _WelcomState extends State<Welcom> {
   List<int> inamount = [];
   List<String>exnote=[];
   List<int>examount=[];
-  int total_income=0;
-  int total_expense=0;
+ 
   
 
   // function to add income and expense
@@ -72,13 +71,15 @@ class _WelcomState extends State<Welcom> {
                     if(gettiltle){
                     inamount.add(temp,); // the value stored in temp is transfered to amount list
                     Hive.box('incomebox').put('inamountlist',inamount); //store the value in amount list to hive box
+                    int total_income=Hive.box('incomebox').get('totalincome',defaultValue: 0);//fetch total income stored in hive and store it in currenttool
                     total_income+=temp;
-                    Hive.box('incomebox').put('totalincome',total_income);
+                    Hive.box('incomebox').put('totalincome', total_income,);
                     }
                     else{
                       examount.add(temp);
                       Hive.box('expensebox').put('examountlist',examount);
-                       total_expense+=temp;
+                      int total_expense=Hive.box('expensebox').get('totalexpense',defaultValue: 0);
+                      total_expense+=temp;
                     Hive.box('expensebox').put('totalexpense',total_expense);
                     }
                     temp=0;
