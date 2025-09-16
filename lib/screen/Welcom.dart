@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intern_app/incomemode.dart';
+import 'package:intern_app/screen/Expense.dart';
 
 class Welcom extends StatefulWidget {
   const Welcom({super.key});
@@ -13,6 +15,13 @@ class _WelcomState extends State<Welcom> {
   List<int> inamount = [];
   List<String> exnote = [];
   List<int> examount = [];
+  var incomebox=Hive.box<Income_mode>('incomebox');
+  var expensebox=Hive.box<Expense_mode>('expensebox');
+ var total_income=Hive.box('total_incomebox');
+ var total_expense=Hive.box('total_expensebox');
+ 
+
+ 
 
   // function to add income and expense
   void Adding(BuildContext context, bool gettiltle) {
@@ -41,19 +50,6 @@ class _WelcomState extends State<Welcom> {
                     hintText: 'note',
                     border: OutlineInputBorder(),
                   ),
-                  onSubmitted: (value) {
-                    if (gettiltle) {
-                      innote.add(textcontroller.text.trim());
-                      Hive.box('incomebox').put('innotelist', innote);
-                      print(textcontroller.text);
-                      textcontroller.clear();
-                    } else {
-                      exnote.add(textcontroller.text.trim());
-                      Hive.box('expensebox').put('exnotelist', exnote);
-                      print(textcontroller.text);
-                      textcontroller.clear();
-                    }
-                  },
                 ),
                 TextField(
                   controller: intcontroller,
@@ -62,45 +58,50 @@ class _WelcomState extends State<Welcom> {
                     hintText: 'amount',
                     border: OutlineInputBorder(),
                   ),
-                  onSubmitted: (value) {
-                    int temp =
-                        int.tryParse(intcontroller.text) ??
-                        0; // convert string to int(because texteditingcontroller always store data as string). store the converted value in temp variable
-                    if (gettiltle) {
-                      inamount.add(
-                        temp,
-                      ); // the value stored in temp is transfered to amount list
-                      Hive.box('incomebox').put(
-                        'inamountlist',
-                        inamount,
-                      ); //store the value in amount list to hive box
-                      int total_income = Hive.box('incomebox').get(
-                        'totalincome',
-                        defaultValue: 0,
-                      ); //fetch total income stored in hive and store it in currenttool
-                      total_income += temp;
-                      Hive.box('incomebox').put('totalincome', total_income);
-                    } else {
-                      examount.add(temp);
-                      Hive.box('expensebox').put('examountlist', examount);
-                      int total_expense = Hive.box(
-                        'expensebox',
-                      ).get('totalexpense', defaultValue: 0);
-                      total_expense += temp;
-                      Hive.box('expensebox').put('totalexpense', total_expense);
-                    }
-                    temp = 0;
-                    intcontroller.clear();
-                    balance();
-                  },
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () {
+                  if(gettiltle){
+                    var note=textcontroller.text.trim();
+                    var textamount=intcontroller.text;
+                    int amount=int.tryParse(textamount)??0;
+                    final newincome=Income_mode(
+                      amount:amount,
+                      note:note,
+                    );
+                    incomebox.add(newincome);
+                   int temp_total_income=total_income.get('totalincome',defaultValue: 0);
+                   temp_total_income+=amount;
+                    total_income.put('totalincome',temp_total_income);
+                  }
+                  else{
+                    var note=textcontroller.text.trim();
+                    var textamount=intcontroller.text;
+                    int amount=int.tryParse(textamount)??0;
+                    final newexpense=Expense_mode(
+                      amount: amount, 
+                      note: note
+                      );
+                      expensebox.add(newexpense);
+                      int temp_total_expense=total_expense.get('totalexpense',defaultValue: 0);
+                      temp_total_expense+=amount;
+                      total_expense.put('totalexpense',temp_total_expense);
+                  }
+                   int inc=total_income.get('totalincome',defaultValue: 0);
+    int dic=total_expense.get('totalexpense',defaultValue: 0);
+    
+      int balance=inc-dic;
+    
+    
+   total_income.put('balance',balance);
+
+
                   Navigator.of(context).pop();
                 },
+                
 
                 child: Text('ok'),
               ),
@@ -117,16 +118,16 @@ class _WelcomState extends State<Welcom> {
       },
     );
   }
-  void balance(){
-    int inc=Hive.box('incomebox').get('totalincome',defaultValue: 0);
-    int dic=Hive.box('expensebox').get('totalexpense',defaultValue: 0);
+ /* void balance(){
+    int inc=total_income.get('totalincome',defaultValue: 0);
+    int dic=total_expense.get('totalexpense',defaultValue: 0);
     
       int balance=inc-dic;
     
     
-   Hive.box('incomebox').put('balance',balance);
+   total_income.put('balance',balance);
 
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -160,11 +161,9 @@ class _WelcomState extends State<Welcom> {
                           children: [
                             Text('Income'),
                             ValueListenableBuilder(
-                              valueListenable: Hive.box('incomebox' ).listenable(),
+                              valueListenable: total_income.listenable(),
                               builder: (context, box, _) {
-                                int value = Hive.box(
-                                  'incomebox',
-                                ).get('totalincome', defaultValue: 0);
+                                int value = total_income.get('totalincome', defaultValue: 0);
                                 return Text('$value');
                               },
                             ),
@@ -197,13 +196,9 @@ class _WelcomState extends State<Welcom> {
                           children: [
                             Text('Expense'),
                             ValueListenableBuilder(
-                              valueListenable: Hive.box(
-                                'expensebox',
-                              ).listenable(),
+                              valueListenable: total_expense.listenable(),
                               builder: (context, box, _) {
-                                int value = Hive.box(
-                                  'expensebox',
-                                ).get('totalexpense', defaultValue: 0);
+                                int value = total_expense.get('totalexpense', defaultValue: 0);
                                 return Text('$value');
                               },
                             ),
@@ -231,9 +226,9 @@ class _WelcomState extends State<Welcom> {
               children: [
                 Text('balance'),
                 ValueListenableBuilder(
-                  valueListenable: Hive.box('incomebox',).listenable(),
+                  valueListenable: total_income.listenable(),
                   builder: (context, box, _){
-                    int value= Hive.box('incomebox').get('balance',defaultValue: 0);
+                    int value= total_income.get('balance',defaultValue: 0);
                     return Text('$value');
                   }
                   )

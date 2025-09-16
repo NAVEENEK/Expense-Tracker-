@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:intern_app/incomemode.dart';
 import 'package:intern_app/screen/expense.dart';
 import 'package:intern_app/screen/income.dart';
 import 'package:intern_app/screen/welcom.dart';
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox('incomebox');
-  await Hive.openBox('expensebox');
+  Hive.registerAdapter(IncomemodeAdapter());
+  await Hive.openBox<Income_mode>('incomebox');
+  Hive.registerAdapter(ExpensemodeAdapter());
+  await Hive.openBox<Expense_mode>('expensebox');
+  await Hive.openBox('total_incomebox');
+  await Hive.openBox('total_expensebox');
   runApp(Main());
 }
 
@@ -21,7 +27,7 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   int _selectedIndex = 0;
   
-  static List<Widget> page = [Welcom(), Income(), Expense()];
+  static List<Widget> page = [Welcom(), pace(), Expense()];
   
   @override
   Widget build(BuildContext context) {

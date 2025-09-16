@@ -2,10 +2,36 @@ import 'package:hive/hive.dart';
 
 part 'incomemode.g.dart';
 @HiveType(typeId:0)
-class Incomemode {
+class Income_mode {
   @HiveField(0)
-  double amount;
+  int amount;
   @HiveField(1)
   String note;
-  Incomemode({required this.amount,required this.note});
+ 
+  Income_mode(
+    {
+      required this.amount,
+      required this.note,
+    
+      }
+      );
+}
+
+
+@HiveType(typeId:1)
+class Expense_mode {
+  @HiveField(0)
+  int amount;
+
+  @HiveField(1)
+  String note;
+
+ 
+  Expense_mode(
+    {
+    required this.amount,
+    required this.note,
+    
+     }
+     );
 }
