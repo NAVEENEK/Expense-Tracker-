@@ -27,7 +27,7 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   int _selectedIndex = 0;
   
-  static List<Widget> page = [Welcom(), pace(), Expense()];
+  static List<Widget> page = [Welcom(), Income(), Expense()];
   
   @override
   Widget build(BuildContext context) {

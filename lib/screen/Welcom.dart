@@ -11,10 +11,6 @@ class Welcom extends StatefulWidget {
 }
 
 class _WelcomState extends State<Welcom> {
-  List<String> innote = [];
-  List<int> inamount = [];
-  List<String> exnote = [];
-  List<int> examount = [];
   var incomebox=Hive.box<Income_mode>('incomebox');
   var expensebox=Hive.box<Expense_mode>('expensebox');
  var total_income=Hive.box('total_incomebox');
@@ -118,16 +114,7 @@ class _WelcomState extends State<Welcom> {
       },
     );
   }
- /* void balance(){
-    int inc=total_income.get('totalincome',defaultValue: 0);
-    int dic=total_expense.get('totalexpense',defaultValue: 0);
-    
-      int balance=inc-dic;
-    
-    
-   total_income.put('balance',balance);
 
-  }*/
 
   @override
   Widget build(BuildContext context) {
