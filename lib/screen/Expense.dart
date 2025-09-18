@@ -12,6 +12,7 @@ class Expense extends StatefulWidget {
 class _ExpenseState extends State<Expense> {
 var expensebox=Hive.box<Expense_mode>('expensebox');
 var total_expense=Hive.box('total_expensebox');
+int sort_option=0;
 
 
 Widget list(){
@@ -23,10 +24,17 @@ return Expanded(
         return Center(child: Text('No Transaction Yet'),);
       }
       else{
+        List<Expense_mode>items=expensebox.values.toList().cast<Expense_mode>();
+        if(sort_option==1){
+          items.sort((a,b)=>a.amount.compareTo(b.amount));
+        }
+        else if(sort_option==2){
+          items.sort((a,b)=>b.amount.compareTo(a.amount));
+        }
         return ListView.builder(
-          itemCount: expensebox.length,
+          itemCount: items.length,
           itemBuilder: (context,index){
-            final trans=expensebox.getAt(index);
+            final trans=items[index];
             if(trans==null)return SizedBox.shrink();
             return ListTile(
               leading: Text(
@@ -81,6 +89,35 @@ return Expanded(
           
                 ],
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                DropdownButton<int>(
+                  value: sort_option,
+                  items: const[
+                    DropdownMenuItem(
+                      value: 0,
+                      child: Text('input order'),
+                      ),
+                      DropdownMenuItem(
+                        value: 1,
+                        child: Text('increasing')
+                        ),
+                        DropdownMenuItem(
+                          value: 2,
+                          child:Text('decreasing')
+                        ),
+                  ],
+                 onChanged:(value){
+                  if(value!=null){
+                    setState(() {
+                      sort_option=value;
+                    });
+                  }
+                 }
+                 ),
+              ],
             ),
             list()
         ],
