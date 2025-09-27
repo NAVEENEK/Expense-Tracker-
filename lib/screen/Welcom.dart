@@ -23,6 +23,7 @@ class _WelcomState extends State<Welcom> {
   void Adding(BuildContext context, bool gettiltle) {
     final TextEditingController textcontroller = TextEditingController();
     final TextEditingController intcontroller = TextEditingController();
+    final _formkey=GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -38,8 +39,42 @@ class _WelcomState extends State<Welcom> {
             content: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
+              children: [Form(
+                key: _formkey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller:textcontroller ,
+                      decoration:InputDecoration(
+                        label: Text('note'),
+                       
+                        border: OutlineInputBorder()
+                      ) ,
+                      keyboardType: TextInputType.text, 
+                    ),
+                    TextFormField(
+                      controller: intcontroller,
+                      decoration: InputDecoration(
+                        label: Text('amount'),
+                       
+                        border: OutlineInputBorder()
+                      ),
+                      keyboardType: TextInputType.number,
+                       validator:(value){
+                        if(value==null||value.trim().isEmpty){
+                          return "this field is required";
+                        }
+                        final number=double.tryParse(value);
+                        if(number==null||number==0){
+                          return "enter a valid number";
+                        }
+                        return null;
+                      },
+                    )
+                  ],
+                )
+                )
+             /*   TextField(
                   controller: textcontroller,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -54,12 +89,13 @@ class _WelcomState extends State<Welcom> {
                     hintText: 'amount',
                     border: OutlineInputBorder(),
                   ),
-                ),
+                ),*/
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () {
+                  if(_formkey.currentState!.validate()){
                   if(gettiltle){
                     var note=textcontroller.text.trim();
                     var textamount=intcontroller.text;
@@ -96,6 +132,7 @@ class _WelcomState extends State<Welcom> {
 
 
                   Navigator.of(context).pop();
+                  }
                 },
                 
 
