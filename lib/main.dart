@@ -14,7 +14,14 @@ void main() async{
   await Hive.openBox<Expense_mode>('expensebox');
   await Hive.openBox('total_incomebox');
   await Hive.openBox('total_expensebox');
-  runApp(Main());
+  runApp(MaterialApp(
+     title: 'Expense Tracker',
+      theme: ThemeData(
+        primaryColor: const Color.fromARGB(255, 91, 194, 253),
+        scaffoldBackgroundColor: Colors.white,
+      ),
+    debugShowCheckedModeBanner: false,
+    home:Main())); 
 }
 
 class Main extends StatefulWidget {
@@ -28,22 +35,58 @@ class _MainState extends State<Main> {
   int _selectedIndex = 0;
   
   static List<Widget> page = [Welcom(), Income(), Expense()];
+
+  Future<void>cleardata(BuildContext context)async{
+    final confirm=await showDialog<bool>(
+      context: context, 
+      builder:(context)=> AlertDialog(
+        title: Text('confirm deletion'),
+        content:Text('are you sure you want to delete all data ') ,
+        actions: [
+          TextButton(
+            onPressed:()=>Navigator.pop(context,false),
+           child: Text("cancel")
+          ),
+          ElevatedButton(
+           onPressed: ()=>Navigator.pop(context,true),
+           child: Text('Delete')
+           )
+
+        ],
+
+      ),
+      );
+      if(confirm==true){
+        await Hive.box<Income_mode>('incomebox').clear();
+        await Hive.box<Expense_mode>('expensebox').clear();
+        await Hive.box('total_incomebox').clear();
+        await Hive.box('total_expensebox').clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('all data deleted'),
+            backgroundColor: Color.fromARGB(255, 158, 159, 149),
+            )
+          );
+          setState(() {});
+      }
+
+  }
   
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Expense Tracker',
-      theme: ThemeData(
-        primaryColor: const Color.fromARGB(255, 91, 194, 253),
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return  Scaffold(
         body: page[_selectedIndex],
         appBar: AppBar(
           title: Text('Expence Tracker'),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,
+          actions: [
+            IconButton(
+             onPressed: ()=>cleardata(context),
+             icon: Icon(Icons.delete_forever),
+             tooltip:"delete all data"
+             )
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
@@ -69,7 +112,6 @@ class _MainState extends State<Main> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

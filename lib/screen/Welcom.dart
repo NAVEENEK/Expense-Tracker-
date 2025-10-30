@@ -74,22 +74,6 @@ class _WelcomState extends State<Welcom> {
                   ],
                 )
                 )
-             /*   TextField(
-                  controller: textcontroller,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    hintText: 'note',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                TextField(
-                  controller: intcontroller,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'amount',
-                    border: OutlineInputBorder(),
-                  ),
-                ),*/
               ],
             ),
             actions: [
