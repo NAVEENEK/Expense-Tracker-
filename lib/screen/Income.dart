@@ -48,8 +48,8 @@ Widget list(){
                     fontWeight: FontWeight.bold
                   ),
                 ),
-                title: Text('₹${trans!.amount}'),
-                subtitle: Text(trans!.note),
+                title: Text('₹${trans.amount}'),
+                subtitle: Text(trans.note),
           
               );
             }

@@ -35,7 +35,6 @@ return Expanded(
           itemCount: items.length,
           itemBuilder: (context,index){
             final trans=items[index];
-            if(trans==null)return SizedBox.shrink();
             return ListTile(
               leading: Text(
                 '${index+1}',
@@ -44,8 +43,8 @@ return Expanded(
                     fontWeight: FontWeight.bold
                   ),
                 ),
-                title: Text('${trans!.amount}'),
-                subtitle: Text(trans!.note),
+                title: Text('${trans.amount}'),
+                subtitle: Text(trans.note),
             );
           },
           );

@@ -23,7 +23,7 @@ class _WelcomState extends State<Welcom> {
   void Adding(BuildContext context, bool gettiltle) {
     final TextEditingController textcontroller = TextEditingController();
     final TextEditingController intcontroller = TextEditingController();
-    final _formkey=GlobalKey<FormState>();
+    final formkey=GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -31,7 +31,7 @@ class _WelcomState extends State<Welcom> {
         return SizedBox(
           height: 100,
           child: AlertDialog(
-            title: Text(gettiltle ? 'add income' : 'add expense'),
+            title: Text(gettiltle ? 'add income' : 'add expense'),//this decide which title to show according to our choice in two button below 
 
             contentPadding: EdgeInsets.all(4),
             titlePadding: EdgeInsets.all(4),
@@ -39,8 +39,9 @@ class _WelcomState extends State<Welcom> {
             content: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [Form(
-                key: _formkey,
+              children: [Form(//A Form is a container widget that groups together one or more input fields (likeTextFormFields) and helps to =>1)Validate them together 2)Save or reset their values .
+              //If you use only TextField, you can read text but can’t easily validate or manage form submission.
+                key: formkey,
                 child: Column(
                   children: [
                     TextFormField(
@@ -79,7 +80,7 @@ class _WelcomState extends State<Welcom> {
             actions: [
               TextButton(
                 onPressed: () {
-                  if(_formkey.currentState!.validate()){
+                  if(formkey.currentState!.validate()){
                   if(gettiltle){
                     var note=textcontroller.text.trim();
                     var textamount=intcontroller.text;
@@ -89,9 +90,9 @@ class _WelcomState extends State<Welcom> {
                       note:note,
                     );
                     incomebox.add(newincome);
-                   int temp_total_income=total_income.get('totalincome',defaultValue: 0);
-                   temp_total_income+=amount;
-                    total_income.put('totalincome',temp_total_income);
+                   int tempTotalIncome=total_income.get('totalincome',defaultValue: 0);
+                   tempTotalIncome+=amount;
+                    total_income.put('totalincome',tempTotalIncome);
                   }
                   else{
                     var note=textcontroller.text.trim();
@@ -102,9 +103,9 @@ class _WelcomState extends State<Welcom> {
                       note: note
                       );
                       expensebox.add(newexpense);
-                      int temp_total_expense=total_expense.get('totalexpense',defaultValue: 0);
-                      temp_total_expense+=amount;
-                      total_expense.put('totalexpense',temp_total_expense);
+                      int tempTotalExpense=total_expense.get('totalexpense',defaultValue: 0);
+                      tempTotalExpense+=amount;
+                      total_expense.put('totalexpense',tempTotalExpense);
                   }
                    int inc=total_income.get('totalincome',defaultValue: 0);
     int dic=total_expense.get('totalexpense',defaultValue: 0);
@@ -134,6 +135,41 @@ class _WelcomState extends State<Welcom> {
         );
       },
     );
+  }
+  Future<void>cleardata(BuildContext context)async{
+    final confirm=await showDialog<bool>(
+      context: context, 
+      builder:(context)=> AlertDialog(
+        title: Text('confirm deletion'),
+        content:Text('are you sure you want to delete all data ') ,
+        actions: [
+          TextButton(
+            onPressed:()=>Navigator.pop(context,false),//Navigator.pop is a build in function which tells to exit from the current widget and go to the previous widget in the widget tree, and value and context is passed to that widget 
+           child: Text("cancel")
+          ),
+          ElevatedButton(
+           onPressed: ()=>Navigator.pop(context,true),
+           child: Text('Delete')
+           )
+
+        ],
+
+      ),
+      );
+      if(confirm==true){
+        await Hive.box<Income_mode>('incomebox').clear();
+        await Hive.box<Expense_mode>('expensebox').clear();
+        await Hive.box('total_incomebox').clear();
+        await Hive.box('total_expensebox').clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('all data deleted'),
+            backgroundColor: Color.fromARGB(255, 158, 159, 149),
+            )
+          );
+          setState(() {});
+      }
+
   }
 
 
@@ -180,7 +216,7 @@ class _WelcomState extends State<Welcom> {
                       ),
                     ),
                     FloatingActionButton(
-                      onPressed: () => Adding(context, true),
+                      onPressed: () => Adding(context, true),//the parameter true is passed to gettitle 
                       tooltip: 'add income',
                       shape: CircleBorder(),
                       child: Icon(Icons.add),
@@ -244,6 +280,13 @@ class _WelcomState extends State<Welcom> {
               ],
             )
           ),
+           
+            IconButton(
+             onPressed: ()=>cleardata(context),
+             icon: Icon(Icons.delete_forever),
+             tooltip:"delete all data"
+             )
+          
         ],
       ),
     );

@@ -32,11 +32,8 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  int _selectedIndex = 0;
-  
-  static List<Widget> page = [Welcom(), Income(), Expense()];
-
-  Future<void>cleardata(BuildContext context)async{
+ 
+ /* Future<void>cleardata(BuildContext context)async{
     final confirm=await showDialog<bool>(
       context: context, 
       builder:(context)=> AlertDialog(
@@ -44,7 +41,7 @@ class _MainState extends State<Main> {
         content:Text('are you sure you want to delete all data ') ,
         actions: [
           TextButton(
-            onPressed:()=>Navigator.pop(context,false),
+            onPressed:()=>Navigator.pop(context,false),//Navigator.pop is a build in function which tells to exit from the current widget and go to the previous widget in the widget tree, and value and context is passed to that widget 
            child: Text("cancel")
           ),
           ElevatedButton(
@@ -70,29 +67,33 @@ class _MainState extends State<Main> {
           setState(() {});
       }
 
-  }
+  }*/
+   int _selectedIndex = 0;
+  
+  static List<Widget> page = [Welcom(), Income(), Expense()];
+
   
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        body: page[_selectedIndex],
+        body: page[_selectedIndex],//this display the selected page 
         appBar: AppBar(
           title: Text('Expence Tracker'),
           centerTitle: true,
           backgroundColor: Colors.blueAccent,
-          actions: [
+          /*actions: [
             IconButton(
              onPressed: ()=>cleardata(context),
              icon: Icon(Icons.delete_forever),
              tooltip:"delete all data"
              )
-          ],
+          ],*/
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (int index) {
+          currentIndex: _selectedIndex,//decides which tab looks active (highlighted).
+          onTap: (int index) {//BottomNavigationBar can automatically undertand which option is selected and assing that value to index 
             setState(() {
-              _selectedIndex = index;
+              _selectedIndex = index;//value of setstate is updated and rebuilded 
             });
           },
           selectedItemColor: const Color.fromARGB(255, 176, 146, 54),
