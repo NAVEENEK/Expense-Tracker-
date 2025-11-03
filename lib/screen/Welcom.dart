@@ -281,14 +281,23 @@ class _WelcomState extends State<Welcom> {
             )
           ),
            
-            IconButton(
-             onPressed: ()=>cleardata(context),
-             icon: Icon(Icons.delete_forever),
-             tooltip:"delete all data"
-             )
+           
+                
+                 
+                        IconButton(
+                         onPressed: ()=>cleardata(context),
+                         icon: Icon(Icons.delete_forever),
+                         tooltip:"delete all data"
+                         ),
+                      ],
+                    
+              
+            ),
+              
+            
           
-        ],
-      ),
-    );
+        
+      );
+  
   }
 }
